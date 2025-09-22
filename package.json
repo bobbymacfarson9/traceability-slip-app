@@ -9,17 +9,17 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
-    "expo": "~54.0.7",
-    "expo-document-picker": "~14.0.7",
-    "expo-file-system": "~19.0.14",
-    "expo-sqlite": "~16.0.8",
-    "react": "18.3.1",
-    "react-native": "0.76.3",
-    "xlsx": "^0.18.5",
     "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
-    "expo-dev-client": "~6.0.12"
+    "expo": "~54.0.10",
+    "expo-dev-client": "~6.0.12",
+    "expo-document-picker": "~14.0.7",
+    "expo-file-system": "~19.0.15",
+    "expo-sqlite": "~16.0.8",
+    "react": "19.1.0",
+    "react-native": "0.81.4",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "typescript": "~5.9.2",
