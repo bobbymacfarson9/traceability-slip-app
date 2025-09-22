@@ -1,0 +1,31 @@
+{
+  "name": "tracibility",
+  "version": "1.0.0",
+  "private": true,
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start -c",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
+  },
+  "dependencies": {
+    "expo": "~54.0.7",
+    "expo-document-picker": "~14.0.7",
+    "expo-file-system": "~19.0.14",
+    "expo-sqlite": "~16.0.8",
+    "react": "18.3.1",
+    "react-native": "0.76.3",
+    "xlsx": "^0.18.5",
+    "crypto-js": "^4.2.0",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "expo-dev-client": "~6.0.12"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.2",
+    "@types/react": "^18.0.0"
+  },
+  "overrides": {
+    "expo-constants": "~16.0.2"
+  }
+}

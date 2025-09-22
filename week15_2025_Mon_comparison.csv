@@ -1,0 +1,11 @@
+product,forecast_boxes,file,day,actual_boxes,week_num,year,abs_error,pct_error
+All Grain Nova,14,Week 15 Loading Slip 2025.xlsx,Mon,7.0,15.0,2025.0,7.0,100.0
+Lrg 30 pack Nova,465,Week 15 Loading Slip 2025.xlsx,Mon,328.0,15.0,2025.0,137.0,41.76829268292683
+Nova 6 Pack,3,Week 15 Loading Slip 2025.xlsx,Mon,6.0,15.0,2025.0,3.0,50.0
+Nova Jumbo,28,Week 15 Loading Slip 2025.xlsx,Mon,12.0,15.0,2025.0,16.0,133.33333333333331
+Wal GV Lg,478,Week 15 Loading Slip 2025.xlsx,Mon,1065.0,15.0,2025.0,587.0,55.11737089201878
+Wal GV Xlrg,151,Week 15 Loading Slip 2025.xlsx,Mon,105.0,15.0,2025.0,46.0,43.80952380952381
+Wal Nova 18's Lg,366,Week 15 Loading Slip 2025.xlsx,Mon,510.0,15.0,2025.0,144.0,28.235294117647058
+Wal Nova Brn,36,Week 15 Loading Slip 2025.xlsx,Mon,30.0,15.0,2025.0,6.0,20.0
+Wal Nova Xlg Brn,5,0,0,0.0,0.0,0.0,5.0,100.0
+XLrg 30 pack Nova,16,0,0,0.0,0.0,0.0,16.0,100.0
