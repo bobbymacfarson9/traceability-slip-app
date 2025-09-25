@@ -19,7 +19,9 @@
     "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
-    "expo-dev-client": "~6.0.12"
+    "expo-dev-client": "~6.0.12",
+    "react-dom": "19.1.0",
+    "react-native-web": "^0.21.0"
   },
   "devDependencies": {
     "typescript": "~5.9.2",
