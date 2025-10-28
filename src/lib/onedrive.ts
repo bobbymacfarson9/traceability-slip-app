@@ -48,57 +48,75 @@ export const getOneDriveFiles = async (): Promise<OneDriveFile[]> => {
   }
 
   try {
-    // For now, return mock data to test the UI
-    // In a real implementation, you'd use the Microsoft Graph API
+    // Create realistic mock files based on actual loading slip naming patterns
+    // In production, this would call the Microsoft Graph API
     const mockFiles: OneDriveFile[] = [
       {
         id: '1',
-        name: 'Loading Slip Week 10 2025.xlsx',
-        downloadUrl: 'https://1drv.ms/f/c/3d6fd4998059ff0f/Eg8xBD2kZ5JCgjBb1DZCxz8BunT3ljPB98zLLkB84OI0Hg?e=GPylzj',
+        name: 'Week 37 Loading Slip 2025.xlsx',
+        downloadUrl: 'https://api.onedrive.com/v1.0/shares/placeholder/items/file1',
         lastModifiedDateTime: new Date().toISOString(),
         size: 45678,
-        webUrl: 'https://1drv.ms/f/c/3d6fd4998059ff0f/Eg8xBD2kZ5JCgjBb1DZCxz8BunT3ljPB98zLLkB84OI0Hg?e=GPylzj',
+        webUrl: 'https://1drv.ms/x/placeholder1',
       },
       {
         id: '2',
-        name: 'Loading Slip Week 9 2025.xlsx',
-        downloadUrl: 'https://1drv.ms/f/c/3d6fd4998059ff0f/Eg8xBD2kZ5JCgjBb1DZCxz8BunT3ljPB98zLLkB84OI0Hg?e=GPylzj',
-        lastModifiedDateTime: new Date(Date.now() - 86400000).toISOString(),
+        name: 'Week 36 Loading Slip 2025.xlsx',
+        downloadUrl: 'https://api.onedrive.com/v1.0/shares/placeholder/items/file2',
+        lastModifiedDateTime: new Date(Date.now() - 86400000 * 7).toISOString(),
         size: 42345,
-        webUrl: 'https://1drv.ms/f/c/3d6fd4998059ff0f/Eg8xBD2kZ5JCgjBb1DZCxz8BunT3ljPB98zLLkB84OI0Hg?e=GPylzj',
+        webUrl: 'https://1drv.ms/x/placeholder2',
       },
       {
         id: '3',
-        name: 'Loading Slip Week 8 2025.xlsx',
-        downloadUrl: 'https://1drv.ms/f/c/3d6fd4998059ff0f/Eg8xBD2kZ5JCgjBb1DZCxz8BunT3ljPB98zLLkB84OI0Hg?e=GPylzj',
-        lastModifiedDateTime: new Date(Date.now() - 172800000).toISOString(),
+        name: 'Week 35 Loading Slip 2025.xlsx',
+        downloadUrl: 'https://api.onedrive.com/v1.0/shares/placeholder/items/file3',
+        lastModifiedDateTime: new Date(Date.now() - 86400000 * 14).toISOString(),
         size: 41234,
-        webUrl: 'https://1drv.ms/f/c/3d6fd4998059ff0f/Eg8xBD2kZ5JCgjBb1DZCxz8BunT3ljPB98zLLkB84OI0Hg?e=GPylzj',
+        webUrl: 'https://1drv.ms/x/placeholder3',
+      },
+      {
+        id: '4',
+        name: 'Week 34 Loading Slip 2025.xlsx',
+        downloadUrl: 'https://api.onedrive.com/v1.0/shares/placeholder/items/file4',
+        lastModifiedDateTime: new Date(Date.now() - 86400000 * 21).toISOString(),
+        size: 43567,
+        webUrl: 'https://1drv.ms/x/placeholder4',
       },
     ];
 
+    console.log(`Found ${mockFiles.length} OneDrive files`);
     return mockFiles;
   } catch (error) {
     console.error('Error fetching OneDrive files:', error);
-    throw error;
+    throw new Error('Failed to load OneDrive files. Please check your connection and try again.');
   }
 };
 
-// Download a file from OneDrive - simplified approach
+// Download a file from OneDrive - simplified approach using sharing links
 export const downloadOneDriveFile = async (file: OneDriveFile): Promise<ArrayBuffer> => {
   if (!authData) {
     throw new Error('Not authenticated with OneDrive');
   }
 
   try {
-    console.log(`OneDrive file selected: ${file.name}`);
+    console.log(`Attempting to download OneDrive file: ${file.name}`);
     
-    // For now, we'll show a message that OneDrive integration is in progress
-    // and suggest using local files for testing
-    throw new Error('OneDrive direct download requires proper authentication setup. Please use "Pick local file" to test the app with your Excel files.');
+    // Try to download using the sharing URL approach
+    // This is a simplified implementation that works with public sharing links
+    const response = await fetch(file.downloadUrl);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to download file: ${response.status} ${response.statusText}`);
+    }
+    
+    const arrayBuffer = await response.arrayBuffer();
+    console.log(`Successfully downloaded ${file.name}, size: ${arrayBuffer.byteLength} bytes`);
+    
+    return arrayBuffer;
   } catch (error) {
-    console.error('OneDrive download not yet implemented:', error);
-    throw error;
+    console.error('OneDrive download error:', error);
+    throw new Error(`Failed to download ${file.name}. Please try using "Pick local file" instead.`);
   }
 };
 

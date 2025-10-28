@@ -13,6 +13,7 @@ import { OneDriveAuth } from '../components/OneDriveAuth';
 import { OneDriveFileBrowser } from '../components/OneDriveFileBrowser';
 import { SheetPicker } from '../components/SheetPicker';
 import { initDb, insertPalletRows, getPalletsByDate } from '../lib/db';
+import { exportDay, exportSummaryByStop } from '../lib/exports';
 import {
   pickSlip,
   readSheet,
@@ -181,30 +182,35 @@ export default function SlipScreen(){
   };
 
   const handleOneDriveFileSelect = async (file: OneDriveFile) => {
+    setIsLoading(true);
     try {
       const bytes = await downloadOneDriveFile(file);
-      const { aoa:rows, wsName } = readSheet(bytes);
-      const meta = getHeaderMeta(rows);
+      const { aoa:rows, wsName, wb } = readSheet(bytes);
 
-      setAoa(rows);
-      setFileName(file.name);
-      setSheetName(wsName);
-      setHeaderRow(meta.headerRowIdx);
-      setShipDate(meta.shipDate ?? '');
-      setBbDate(meta.bbDate ?? '');
-
-      const sh = findStopHeaderRow(rows, meta.headerRowIdx+1);
-      setStopHeaderRow(sh.rowIdx);
-      setStopTitles(sortStops(sh.titles)); // 👈 sort here
-
-      if (meta.shipDate) {
-        const pals = await getPalletsByDate(meta.shipDate);
-        setTodayPallets(pals as any);
+      // Handle multiple sheets
+      if (wb.SheetNames.length > 1) {
+        setAvailableSheets(wb.SheetNames);
+        setWorkbook(wb);
+        setFileName(file.name);
+        setShowOneDriveBrowser(false);
+        setShowSheetPicker(true);
+        return;
       }
+
+      await loadSheetData(rows, wsName, file.name);
       setShowOneDriveBrowser(false);
     } catch (error:any) {
-      console.error('Error loading file:', error);
-      Alert.alert('Error', `Failed to load file from OneDrive: ${error.message}`);
+      console.error('Error loading OneDrive file:', error);
+      Alert.alert(
+        'OneDrive Error', 
+        `${error.message}\n\nTip: You can use "Pick local file" to test with files from your device.`,
+        [
+          { text: 'Use Local Files', onPress: () => setShowOneDriveBrowser(false) },
+          { text: 'Try Again', onPress: () => {} }
+        ]
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -279,12 +285,23 @@ export default function SlipScreen(){
   
   const closePallet = async (rows:PalletRow[]|null) => {
     setPalletVisible(false);
-    if (!rows) return;
-    await insertPalletRows(rows);
-    if (selectedStop) setCompletedStops(prev => [...prev, selectedStop.stopTitle]);
-    if (shipDate){
-      const pals = await getPalletsByDate(shipDate);
-      setTodayPallets(pals as any);
+    if (!rows || rows.length === 0) return;
+    
+    try {
+      await insertPalletRows(rows);
+      if (selectedStop) {
+        setCompletedStops(prev => [...prev, selectedStop.stopTitle]);
+      }
+      
+      if (shipDate) {
+        const pals = await getPalletsByDate(shipDate);
+        setTodayPallets(pals as any);
+      }
+      
+      Alert.alert('Success', `Pallet completed for ${selectedStop?.stopTitle || 'stop'}`);
+    } catch (error: any) {
+      console.error('Error saving pallet:', error);
+      Alert.alert('Error', `Failed to save pallet: ${error.message || 'Unknown error'}`);
     }
   };
 
@@ -314,6 +331,26 @@ export default function SlipScreen(){
 
   const handleStopComplete = (stopTitle: string) => {
     setCompletedStops(prev => [...prev, stopTitle]);
+  };
+
+  const handleExportData = async () => {
+    if (!shipDate || todayPallets.length === 0) {
+      Alert.alert('No Data', 'No pallet data available for export.');
+      return;
+    }
+
+    try {
+      const palletPath = await exportDay(shipDate, todayPallets);
+      const summaryPath = await exportSummaryByStop(shipDate, todayPallets);
+      
+      Alert.alert(
+        'Export Complete',
+        `Data exported successfully!\n\nPallets: ${palletPath}\nSummary: ${summaryPath}`,
+        [{ text: 'OK' }]
+      );
+    } catch (error: any) {
+      Alert.alert('Export Error', error.message || 'Failed to export data');
+    }
   };
 
   if (showOneDriveAuth) {
@@ -411,9 +448,24 @@ export default function SlipScreen(){
       {/* Status Bar */}
       {todayPallets.length > 0 && (
         <View style={{ padding: 12, backgroundColor: '#f0fdf4', borderTopWidth: 1, borderTopColor: '#bbf7d0' }}>
-          <Text style={{ fontSize: 14, color: '#166534', textAlign: 'center' }}>
-            ✓ {todayPallets.length} pallets saved today
-          </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Text style={{ fontSize: 14, color: '#166534' }}>
+              ✓ {todayPallets.length} pallets saved today
+            </Text>
+            <TouchableOpacity 
+              onPress={handleExportData}
+              style={{ 
+                backgroundColor: '#166534', 
+                paddingHorizontal: 12, 
+                paddingVertical: 6, 
+                borderRadius: 6 
+              }}
+            >
+              <Text style={{ color: 'white', fontSize: 12, fontWeight: '600' }}>
+                Export CSV
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
     </View>
